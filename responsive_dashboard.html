@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighting Designs - Sales Analysis Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .dashboard-container {
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .kpi-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .kpi-trend {
+            font-size: 0.8em;
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e0e6ed;
+            height: 400px; /* Fixed height for consistency */
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .chart-canvas {
+            height: 300px !important; /* Ensure charts fit properly */
+            width: 100% !important;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+            height: 450px; /* Taller for forecast chart */
+        }
+
+        .filters-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .filters-section h3 {
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .filter-group {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .filter-group select {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            color: #2c3e50;
+            font-size: 0.9em;
+            cursor: pointer;
+            min-width: 110px;
+        }
+
+        .forecast-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+
+        .forecast-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .forecast-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .forecast-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .forecast-value {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .forecast-label {
+            color: #7f8c8d;
+            margin-top: 4px;
+            font-size: 0.9em;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+
+        .insight-title {
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .insight-list {
+            list-style: none;
+            color: #2c3e50;
+        }
+
+        .insight-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.95em;
+        }
+
+        .insight-list li:before {
+            content: "📊";
+            position: absolute;
+            left: 0;
+        }
+
+        /* MacBook specific optimizations */
+        @media (max-width: 1440px) {
+            .dashboard-container {
+                max-width: 95%;
+                padding: 18px;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+            
+            .full-width {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+            
+            .kpi-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .chart-container {
+                height: 350px;
+                padding: 15px;
+            }
+        }
+
+        /* Ensure charts scale properly */
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Lighting Designs Sales Dashboard</h1>
+            <p>Advanced Analytics & Forecasting | September 2025</p>
+        </div>
+
+        <div class="filters-section">
+            <h3>Interactive Filters (Excel Slicers Simulation)</h3>
+            <div class="filter-group">
+                <select id="periodFilter">
+                    <option>All Periods</option>
+                    <option>Q1 2025</option>
+                    <option>Q4 2024</option>
+                    <option>YTD 2025</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="regionFilter">
+                    <option>All Regions</option>
+                    <option>Northeast</option>
+                    <option>Southeast</option>
+                    <option>West</option>
+                    <option>Midwest</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <select id="categoryFilter">
+                    <option>All Categories</option>
+                    <option>LED Fixtures</option>
+                    <option>Smart Lighting</option>
+                    <option>Outdoor Lighting</option>
+                    <option>Commercial Systems</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-value">$2.1M</div>
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-trend">↗️ +18% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">15,247</div>
+                <div class="kpi-label">Units Sold</div>
+                <div class="kpi-trend">↗️ +12% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">32%</div>
+                <div class="kpi-label">Avg Profit Margin</div>
+                <div class="kpi-trend">↗️ +3% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">92%</div>
+                <div class="kpi-label">Forecast Accuracy</div>
+                <div class="kpi-trend">↗️ +14% Improved</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div class="chart-title">Monthly Revenue Trend</div>
+                <canvas id="revenueChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Product Category Performance</div>
+                <canvas id="categoryChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Regional Sales Distribution</div>
+                <canvas id="regionChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Customer Segment Analysis</div>
+                <canvas id="segmentChart" class="chart-canvas"></canvas>
+            </div>
+
+            <div class="chart-container full-width">
+                <div class="chart-title">6-Month Revenue Forecast with Confidence Intervals</div>
+                <canvas id="forecastChart" class="chart-canvas"></canvas>
+            </div>
+        </div>
+
+        <div class="forecast-section">
+            <div class="forecast-title">Solver Optimization Results</div>
+            <div class="forecast-metrics">
+                <div class="forecast-card">
+                    <div class="forecast-value">$1.8M</div>
+                    <div class="forecast-label">Optimized Revenue (Next 6M)</div>
+                </div>
+                <div class="forecast-card">
+                    <div class="forecast-value">15%</div>
+                    <div class="forecast-label">Inventory Cost Reduction</div>
+                </div>
+                <div class="forecast-card">
+                    <div class="forecast-value">98%</div>
+                    <div class="forecast-label">Optimal Fill Rate</div>
+                </div>
+                <div class="forecast-card">
+                    <div class="forecast-value">$18K</div>
+                    <div class="forecast-label">Optimal Marketing Spend</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <div class="insight-title">Key Business Insights from PivotTable Analysis</div>
+            <ul class="insight-list">
+                <li><strong>LED Fixtures</strong> dominate with 40% market share and highest margins (35%)</li>
+                <li><strong>Northeast region</strong> outperforms others by 22% - expansion opportunity identified</li>
+                <li><strong>Q4 seasonality</strong> shows 25% sales boost - inventory planning optimized</li>
+                <li><strong>B2B customers</strong> have 3x higher AOV than B2C - focus area for growth</li>
+                <li><strong>Smart Lighting</strong> category shows 45% growth potential - strategic investment</li>
+                <li><strong>Price elasticity</strong> analysis suggests 8% increase optimal for high-margin products</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configurations with MacBook optimization
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
+                },
+                line: {
+                    tension: 0.4
+                }
+            }
+        };
+
+        // Monthly Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['May 23', 'Aug 23', 'Nov 23', 'Feb 24', 'May 24', 'Aug 24', 'Nov 24', 'Feb 25', 'Apr 25'],
+                datasets: [{
+                    label: 'Monthly Revenue ($K)',
+                    data: [145, 162, 198, 156, 171, 189, 234, 187, 203],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value + 'K';
+                            },
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Product Category Performance Chart
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['LED Fixtures', 'Smart Lighting', 'Outdoor Lighting', 'Commercial Systems', 'Traditional Bulbs'],
+                datasets: [{
+                    data: [40, 25, 18, 12, 5],
+                    backgroundColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#f093fb',
+                        '#f5576c',
+                        '#4facfe'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                ...chartOptions,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 10,
+                            usePointStyle: true,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Regional Sales Distribution Chart
+        const regionCtx = document.getElementById('regionChart').getContext('2d');
+        new Chart(regionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Northeast', 'Southeast', 'West', 'Midwest'],
+                datasets: [{
+                    label: 'Sales ($K)',
+                    data: [580, 475, 425, 385],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value + 'K';
+                            },
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Customer Segment Analysis Chart
+        const segmentCtx = document.getElementById('segmentChart').getContext('2d');
+        new Chart(segmentCtx, {
+            type: 'polarArea',
+            data: {
+                labels: ['B2B Large', 'B2B Small', 'B2C Premium', 'B2C Standard'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(240, 147, 251, 0.8)',
+                        'rgba(245, 87, 108, 0.8)'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 50,
+                        ticks: {
+                            font: {
+                                size: 9
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 6-Month Forecast Chart with Confidence Intervals
+        const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+        new Chart(forecastCtx, {
+            type: 'line',
+            data: {
+                labels: ['May 25', 'Jun 25', 'Jul 25', 'Aug 25', 'Sep 25', 'Oct 25'],
+                datasets: [
+                    {
+                        label: 'Forecasted Revenue',
+                        data: [210, 225, 240, 235, 250, 280],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: false
+                    },
+                    {
+                        label: 'Upper Confidence (95%)',
+                        data: [225, 245, 265, 260, 275, 310],
+                        borderColor: 'rgba(102, 126, 234, 0.4)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: '+1'
+                    },
+                    {
+                        label: 'Lower Confidence (95%)',
+                        data: [195, 205, 215, 210, 225, 250],
+                        borderColor: 'rgba(102, 126, 234, 0.4)',
+                        backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                ...chartOptions,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value + 'K';
+                            },
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 10
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Interactive filter functionality
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function() {
+                console.log(`Filter applied: ${this.id} = ${this.value}`);
+                // In a real Excel environment, this would trigger PivotTable refresh
+            });
+        });
+
+        // Auto-resize charts on window resize
+        window.addEventListener('resize', function() {
+            Chart.instances.forEach(chart => {
+                chart.resize();
+            });
+        });
+    </script>
+</body>
+</html>
