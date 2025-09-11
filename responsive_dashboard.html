@@ -49,6 +49,59 @@
             font-size: 1em;
         }
 
+        .filters-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .filters-section h3 {
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .filter-group {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            color: #2c3e50;
+            font-size: 0.9em;
+            cursor: pointer;
+            min-width: 130px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .clear-filters {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filters:hover {
+            background: white;
+            color: #f5576c;
+        }
+
         .kpi-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -105,11 +158,11 @@
             padding: 20px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
             border: 1px solid #e0e6ed;
-            height: 400px; /* Fixed height for consistency */
+            height: 380px;
         }
 
         .chart-title {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 15px;
@@ -119,43 +172,17 @@
         }
 
         .chart-canvas {
-            height: 300px !important; /* Ensure charts fit properly */
+            height: 280px !important;
             width: 100% !important;
         }
 
         .full-width {
             grid-column: 1 / -1;
-            height: 450px; /* Taller for forecast chart */
+            height: 420px;
         }
 
-        .filters-section {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .filters-section h3 {
-            margin-bottom: 12px;
-            font-size: 1.2em;
-        }
-
-        .filter-group {
-            display: inline-block;
-            margin: 0 10px;
-        }
-
-        .filter-group select {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 20px;
-            background: white;
-            color: #2c3e50;
-            font-size: 0.9em;
-            cursor: pointer;
-            min-width: 110px;
+        .full-width .chart-canvas {
+            height: 320px !important;
         }
 
         .forecast-section {
@@ -243,8 +270,16 @@
                 height: 350px;
             }
             
+            .chart-canvas {
+                height: 250px !important;
+            }
+            
             .full-width {
-                height: 400px;
+                height: 380px;
+            }
+            
+            .full-width .chart-canvas {
+                height: 280px !important;
             }
         }
 
@@ -255,7 +290,7 @@
             }
             
             .chart-container {
-                height: 400px;
+                height: 350px;
             }
             
             .kpi-section {
@@ -278,15 +313,13 @@
             }
             
             .chart-container {
-                height: 350px;
+                height: 320px;
                 padding: 15px;
             }
-        }
-
-        /* Ensure charts scale properly */
-        canvas {
-            max-width: 100% !important;
-            height: auto !important;
+            
+            .chart-canvas {
+                height: 220px !important;
+            }
         }
     </style>
 </head>
@@ -294,59 +327,61 @@
     <div class="dashboard-container">
         <div class="header">
             <h1>Lighting Designs Sales Dashboard</h1>
-            <p>Advanced Analytics & Forecasting | May 2025 </p>
+            <p>Advanced Analytics & Forecasting | May 2025</p>
         </div>
 
         <div class="filters-section">
             <h3>Interactive Filters (Excel Slicers Simulation)</h3>
             <div class="filter-group">
-                <select id="periodFilter">
-                    <option>All Periods</option>
-                    <option>Q1 2025</option>
-                    <option>Q4 2024</option>
-                    <option>YTD 2025</option>
+                <select id="periodFilter" onchange="applyFilters()">
+                    <option value="">All Periods</option>
+                    <option value="Q4 2024">Q4 2024</option>
+                    <option value="Q1 2025">Q1 2025</option>
+                    <option value="YTD 2025">YTD 2025</option>
                 </select>
             </div>
             <div class="filter-group">
-                <select id="regionFilter">
-                    <option>All Regions</option>
-                    <option>Northeast</option>
-                    <option>Southeast</option>
-                    <option>West</option>
-                    <option>Midwest</option>
+                <select id="regionFilter" onchange="applyFilters()">
+                    <option value="">All Regions</option>
+                    <option value="Northeast">Northeast</option>
+                    <option value="Southeast">Southeast</option>
+                    <option value="West">West</option>
+                    <option value="Midwest">Midwest</option>
                 </select>
             </div>
             <div class="filter-group">
-                <select id="categoryFilter">
-                    <option>All Categories</option>
-                    <option>LED Fixtures</option>
-                    <option>Smart Lighting</option>
-                    <option>Outdoor Lighting</option>
-                    <option>Commercial Systems</option>
+                <select id="categoryFilter" onchange="applyFilters()">
+                    <option value="">All Categories</option>
+                    <option value="LED Fixtures">LED Fixtures</option>
+                    <option value="Smart Lighting">Smart Lighting</option>
+                    <option value="Outdoor Lighting">Outdoor Lighting</option>
+                    <option value="Commercial Systems">Commercial Systems</option>
+                    <option value="Traditional Bulbs">Traditional Bulbs</option>
                 </select>
             </div>
+            <button class="clear-filters" onclick="clearFilters()">Clear All Filters</button>
         </div>
 
         <div class="kpi-section">
             <div class="kpi-card">
-                <div class="kpi-value">$2.1M</div>
+                <div class="kpi-value" id="totalRevenue">$2.1M</div>
                 <div class="kpi-label">Total Revenue</div>
-                <div class="kpi-trend">↗️ +18% YoY</div>
+                <div class="kpi-trend" id="revenueTrend">↗️ +18% YoY</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value">15,247</div>
+                <div class="kpi-value" id="unitsSold">15,247</div>
                 <div class="kpi-label">Units Sold</div>
-                <div class="kpi-trend">↗️ +12% YoY</div>
+                <div class="kpi-trend" id="unitsTrend">↗️ +12% YoY</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value">32%</div>
+                <div class="kpi-value" id="profitMargin">32%</div>
                 <div class="kpi-label">Avg Profit Margin</div>
-                <div class="kpi-trend">↗️ +3% YoY</div>
+                <div class="kpi-trend" id="marginTrend">↗️ +3% YoY</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-value">92%</div>
+                <div class="kpi-value" id="forecastAccuracy">92%</div>
                 <div class="kpi-label">Forecast Accuracy</div>
-                <div class="kpi-trend">↗️ +14% Improved</div>
+                <div class="kpi-trend" id="accuracyTrend">↗️ +14% Improved</div>
             </div>
         </div>
 
@@ -381,19 +416,19 @@
             <div class="forecast-title">Solver Optimization Results</div>
             <div class="forecast-metrics">
                 <div class="forecast-card">
-                    <div class="forecast-value">$1.8M</div>
+                    <div class="forecast-value" id="optimizedRevenue">$1.8M</div>
                     <div class="forecast-label">Optimized Revenue (Next 6M)</div>
                 </div>
                 <div class="forecast-card">
-                    <div class="forecast-value">15%</div>
+                    <div class="forecast-value" id="costReduction">15%</div>
                     <div class="forecast-label">Inventory Cost Reduction</div>
                 </div>
                 <div class="forecast-card">
-                    <div class="forecast-value">98%</div>
+                    <div class="forecast-value" id="fillRate">98%</div>
                     <div class="forecast-label">Optimal Fill Rate</div>
                 </div>
                 <div class="forecast-card">
-                    <div class="forecast-value">$18K</div>
+                    <div class="forecast-value" id="marketingSpend">$18K</div>
                     <div class="forecast-label">Optimal Marketing Spend</div>
                 </div>
             </div>
@@ -401,7 +436,7 @@
 
         <div class="insight-box">
             <div class="insight-title">Key Business Insights from PivotTable Analysis</div>
-            <ul class="insight-list">
+            <ul class="insight-list" id="insightsList">
                 <li><strong>LED Fixtures</strong> dominate with 40% market share and highest margins (35%)</li>
                 <li><strong>Northeast region</strong> outperforms others by 22% - expansion opportunity identified</li>
                 <li><strong>Q4 seasonality</strong> shows 25% sales boost - inventory planning optimized</li>
@@ -413,7 +448,38 @@
     </div>
 
     <script>
-        // Chart.js configurations with MacBook optimization
+        // Sample data structure for filtering
+        let baseData = {
+            revenue: {
+                'All Periods': { total: 2100000, trend: '+18%', months: [145, 162, 198, 156, 171, 189, 234, 187, 203] },
+                'Q1 2025': { total: 590000, trend: '+22%', months: [190, 200, 200] },
+                'Q4 2024': { total: 655000, trend: '+15%', months: [210, 220, 225] },
+                'YTD 2025': { total: 800000, trend: '+20%', months: [190, 200, 200, 210] }
+            },
+            categories: {
+                'All Categories': [40, 25, 18, 12, 5],
+                'LED Fixtures': [100, 0, 0, 0, 0],
+                'Smart Lighting': [0, 100, 0, 0, 0],
+                'Outdoor Lighting': [0, 0, 100, 0, 0],
+                'Commercial Systems': [0, 0, 0, 100, 0]
+            },
+            regions: {
+                'All Regions': [580, 475, 425, 385],
+                'Northeast': [580, 0, 0, 0],
+                'Southeast': [0, 475, 0, 0],
+                'West': [0, 0, 425, 0],
+                'Midwest': [0, 0, 0, 385]
+            }
+        };
+
+        let charts = {};
+        let currentFilters = {
+            period: '',
+            region: '',
+            category: ''
+        };
+
+        // Chart options
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -421,249 +487,413 @@
                 legend: {
                     position: 'bottom',
                     labels: {
-                        padding: 15,
+                        padding: 10,
                         usePointStyle: true,
-                        font: {
-                            size: 11
-                        }
+                        font: { size: 10 }
                     }
-                }
-            },
-            elements: {
-                point: {
-                    radius: 4,
-                    hoverRadius: 6
-                },
-                line: {
-                    tension: 0.4
                 }
             }
         };
 
-        // Monthly Revenue Trend Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: ['May 23', 'Aug 23', 'Nov 23', 'Feb 24', 'May 24', 'Aug 24', 'Nov 24', 'Feb 25', 'Apr 25'],
-                datasets: [{
-                    label: 'Monthly Revenue ($K)',
-                    data: [145, 162, 198, 156, 171, 189, 234, 187, 203],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    borderWidth: 3,
-                    fill: true
-                }]
-            },
-            options: {
-                ...chartOptions,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value + 'K';
-                            },
-                            font: {
-                                size: 10
-                            }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            font: {
-                                size: 10
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Product Category Performance Chart
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['LED Fixtures', 'Smart Lighting', 'Outdoor Lighting', 'Commercial Systems', 'Traditional Bulbs'],
-                datasets: [{
-                    data: [40, 25, 18, 12, 5],
-                    backgroundColor: [
-                        '#667eea',
-                        '#764ba2',
-                        '#f093fb',
-                        '#f5576c',
-                        '#4facfe'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            padding: 10,
-                            usePointStyle: true,
-                            font: {
-                                size: 10
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Regional Sales Distribution Chart
-        const regionCtx = document.getElementById('regionChart').getContext('2d');
-        new Chart(regionCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Northeast', 'Southeast', 'West', 'Midwest'],
-                datasets: [{
-                    label: 'Sales ($K)',
-                    data: [580, 475, 425, 385],
-                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
-                    borderRadius: 6,
-                    borderSkipped: false
-                }]
-            },
-            options: {
-                ...chartOptions,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value + 'K';
-                            },
-                            font: {
-                                size: 10
-                            }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            font: {
-                                size: 10
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Customer Segment Analysis Chart
-        const segmentCtx = document.getElementById('segmentChart').getContext('2d');
-        new Chart(segmentCtx, {
-            type: 'polarArea',
-            data: {
-                labels: ['B2B Large', 'B2B Small', 'B2C Premium', 'B2C Standard'],
-                datasets: [{
-                    data: [45, 25, 20, 10],
-                    backgroundColor: [
-                        'rgba(102, 126, 234, 0.8)',
-                        'rgba(118, 75, 162, 0.8)',
-                        'rgba(240, 147, 251, 0.8)',
-                        'rgba(245, 87, 108, 0.8)'
-                    ],
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                ...chartOptions,
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        max: 50,
-                        ticks: {
-                            font: {
-                                size: 9
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // 6-Month Forecast Chart with Confidence Intervals
-        const forecastCtx = document.getElementById('forecastChart').getContext('2d');
-        new Chart(forecastCtx, {
-            type: 'line',
-            data: {
-                labels: ['May 25', 'Jun 25', 'Jul 25', 'Aug 25', 'Sep 25', 'Oct 25'],
-                datasets: [
-                    {
-                        label: 'Forecasted Revenue',
-                        data: [210, 225, 240, 235, 250, 280],
+        // Initialize all charts
+        function initializeCharts() {
+            // Monthly Revenue Trend Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            charts.revenue = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['May 23', 'Aug 23', 'Nov 23', 'Feb 24', 'May 24', 'Aug 24', 'Nov 24', 'Feb 25', 'Apr 25'],
+                    datasets: [{
+                        label: 'Monthly Revenue ($K)',
+                        data: baseData.revenue['All Periods'].months,
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         borderWidth: 3,
-                        fill: false
-                    },
-                    {
-                        label: 'Upper Confidence (95%)',
-                        data: [225, 245, 265, 260, 275, 310],
-                        borderColor: 'rgba(102, 126, 234, 0.4)',
-                        backgroundColor: 'rgba(102, 126, 234, 0.05)',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        fill: '+1'
-                    },
-                    {
-                        label: 'Lower Confidence (95%)',
-                        data: [195, 205, 215, 210, 225, 250],
-                        borderColor: 'rgba(102, 126, 234, 0.4)',
-                        backgroundColor: 'rgba(102, 126, 234, 0.05)',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                ...chartOptions,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value + 'K';
-                            },
-                            font: {
-                                size: 10
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '$' + value + 'K'; },
+                                font: { size: 10 }
                             }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            font: {
-                                size: 10
+                        },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Product Category Performance Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            charts.category = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['LED Fixtures', 'Smart Lighting', 'Outdoor Lighting', 'Commercial Systems', 'Traditional Bulbs'],
+                    datasets: [{
+                        data: baseData.categories['All Categories'],
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 8,
+                                usePointStyle: true,
+                                font: { size: 9 }
                             }
                         }
                     }
                 }
-            }
-        });
-
-        // Interactive filter functionality
-        document.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', function() {
-                console.log(`Filter applied: ${this.id} = ${this.value}`);
-                // In a real Excel environment, this would trigger PivotTable refresh
             });
+
+            // Regional Sales Distribution Chart
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            charts.region = new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Northeast', 'Southeast', 'West', 'Midwest'],
+                    datasets: [{
+                        label: 'Sales ($K)',
+                        data: baseData.regions['All Regions'],
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '$' + value + 'K'; },
+                                font: { size: 10 }
+                            }
+                        },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Customer Segment Analysis Chart
+            const segmentCtx = document.getElementById('segmentChart').getContext('2d');
+            charts.segment = new Chart(segmentCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['B2B Large', 'B2B Small', 'B2C Premium', 'B2C Standard'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            'rgba(102, 126, 234, 0.8)',
+                            'rgba(118, 75, 162, 0.8)',
+                            'rgba(240, 147, 251, 0.8)',
+                            'rgba(245, 87, 108, 0.8)'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 50,
+                            ticks: { font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+
+            // 6-Month Forecast Chart
+            const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+            charts.forecast = new Chart(forecastCtx, {
+                type: 'line',
+                data: {
+                    labels: ['May 25', 'Jun 25', 'Jul 25', 'Aug 25', 'Sep 25', 'Oct 25'],
+                    datasets: [
+                        {
+                            label: 'Forecasted Revenue',
+                            data: [210, 225, 240, 235, 250, 280],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Upper Confidence (95%)',
+                            data: [225, 245, 265, 260, 275, 310],
+                            borderColor: 'rgba(102, 126, 234, 0.4)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: '+1'
+                        },
+                        {
+                            label: 'Lower Confidence (95%)',
+                            data: [195, 205, 215, 210, 225, 250],
+                            borderColor: 'rgba(102, 126, 234, 0.4)',
+                            backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    interaction: { intersect: false, mode: 'index' },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '$' + value + 'K'; },
+                                font: { size: 10 }
+                            }
+                        },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Apply filters function - THIS IS THE KEY MISSING FUNCTIONALITY
+        function applyFilters() {
+            const periodFilter = document.getElementById('periodFilter').value;
+            const regionFilter = document.getElementById('regionFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            currentFilters = {
+                period: periodFilter,
+                region: regionFilter,
+                category: categoryFilter
+            };
+
+            updateDashboard();
+        }
+
+        // Update dashboard based on filters
+        function updateDashboard() {
+            updateKPIs();
+            updateCharts();
+            updateInsights();
+        }
+
+        // Update KPI cards
+        function updateKPIs() {
+            const period = currentFilters.period || 'All Periods';
+            const revenueData = baseData.revenue[period];
+            
+            // Calculate realistic multipliers based on actual filter selections
+            let revenueMultiplier = 1;
+            let unitsMultiplier = 1;
+            
+            // Category-specific adjustments
+            if (currentFilters.category === 'LED Fixtures') {
+                revenueMultiplier = 0.40; // 40% of total business
+                unitsMultiplier = 0.35;   // Higher value, fewer units
+            } else if (currentFilters.category === 'Smart Lighting') {
+                revenueMultiplier = 0.25; // 25% of total business
+                unitsMultiplier = 0.20;   // Premium products, fewer units
+            } else if (currentFilters.category === 'Outdoor Lighting') {
+                revenueMultiplier = 0.18; // 18% of total business
+                unitsMultiplier = 0.22;   // More units, lower avg price
+            } else if (currentFilters.category === 'Commercial Systems') {
+                revenueMultiplier = 0.12; // 12% of total business
+                unitsMultiplier = 0.08;   // High value, low volume
+            } else if (currentFilters.category === 'Traditional Bulbs') {
+                revenueMultiplier = 0.05; // 5% of total business
+                unitsMultiplier = 0.15;   // Low value, higher volume
+            }
+            
+            // Region-specific adjustments
+            if (currentFilters.region === 'Northeast') {
+                revenueMultiplier *= 0.31; // ~31% of total business
+            } else if (currentFilters.region === 'Southeast') {
+                revenueMultiplier *= 0.25; // ~25% of total business
+            } else if (currentFilters.region === 'West') {
+                revenueMultiplier *= 0.23; // ~23% of total business
+            } else if (currentFilters.region === 'Midwest') {
+                revenueMultiplier *= 0.21; // ~21% of total business
+            }
+
+            const totalRevenue = Math.round(revenueData.total * revenueMultiplier);
+            const units = Math.round(15247 * unitsMultiplier);
+            
+            // Update display values
+            if (totalRevenue >= 1000000) {
+                document.getElementById('totalRevenue').textContent = `$${(totalRevenue / 1000000).toFixed(1)}M`;
+            } else {
+                document.getElementById('totalRevenue').textContent = `$${(totalRevenue / 1000).toFixed(0)}K`;
+            }
+            
+            document.getElementById('unitsSold').textContent = units.toLocaleString();
+            document.getElementById('revenueTrend').textContent = `↗️ ${revenueData.trend} YoY`;
+            
+            // Update other KPIs based on category
+            if (currentFilters.category === 'LED Fixtures') {
+                document.getElementById('profitMargin').textContent = '35%';
+                document.getElementById('marginTrend').textContent = '↗️ +5% YoY';
+            } else if (currentFilters.category === 'Smart Lighting') {
+                document.getElementById('profitMargin').textContent = '38%';
+                document.getElementById('marginTrend').textContent = '↗️ +8% YoY';
+            } else if (currentFilters.category === 'Traditional Bulbs') {
+                document.getElementById('profitMargin').textContent = '18%';
+                document.getElementById('marginTrend').textContent = '↘️ -2% YoY';
+            } else {
+                document.getElementById('profitMargin').textContent = '32%';
+                document.getElementById('marginTrend').textContent = '↗️ +3% YoY';
+            }
+        }
+
+        // Update charts
+        function updateCharts() {
+            // Update category chart
+            const categoryKey = currentFilters.category || 'All Categories';
+            charts.category.data.datasets[0].data = baseData.categories[categoryKey];
+            charts.category.update();
+
+            // Update region chart
+            const regionKey = currentFilters.region || 'All Regions';
+            charts.region.data.datasets[0].data = baseData.regions[regionKey];
+            charts.region.update();
+
+            // Update revenue chart based on period
+            const period = currentFilters.period || 'All Periods';
+            const revenueData = baseData.revenue[period];
+            
+            if (period === 'Q1 2025') {
+                charts.revenue.data.labels = ['Jan 25', 'Feb 25', 'Mar 25'];
+                charts.revenue.data.datasets[0].data = revenueData.months;
+            } else if (period === 'Q4 2024') {
+                charts.revenue.data.labels = ['Oct 24', 'Nov 24', 'Dec 24'];
+                charts.revenue.data.datasets[0].data = revenueData.months;
+            } else {
+                charts.revenue.data.labels = ['May 23', 'Aug 23', 'Nov 23', 'Feb 24', 'May 24', 'Aug 24', 'Nov 24', 'Feb 25', 'Apr 25'];
+                charts.revenue.data.datasets[0].data = revenueData.months;
+            }
+            charts.revenue.update();
+        }
+
+        // Update insights based on filters
+        function updateInsights() {
+            const insightsList = document.getElementById('insightsList');
+            let insights = [];
+
+            if (currentFilters.category === 'LED Fixtures') {
+                insights = [
+                    '<strong>LED Fixtures</strong> showing strong performance with 35% profit margin',
+                    '<strong>Energy efficiency</strong> driving 40% of customer purchase decisions',
+                    '<strong>B2B segment</strong> accounts for 70% of LED fixture sales',
+                    '<strong>Premium LED products</strong> have 15% higher margins than standard',
+                    '<strong>Government rebates</strong> boosting LED adoption by 25% in commercial sector'
+                ];
+            } else if (currentFilters.category === 'Smart Lighting') {
+                insights = [
+                    '<strong>Smart Lighting</strong> fastest growing category at 45% YoY growth',
+                    '<strong>Voice integration</strong> features drive 60% of smart lighting sales',
+                    '<strong>Residential market</strong> adoption accelerating in Q1 2025',
+                    '<strong>IoT compatibility</strong> increasingly important for B2B customers',
+                    '<strong>Mobile app control</strong> is the most requested feature'
+                ];
+            } else if (currentFilters.category === 'Traditional Bulbs') {
+                insights = [
+                    '<strong>Traditional Bulbs</strong> market declining at 8% YoY as expected',
+                    '<strong>Price competition</strong> intense in traditional segment',
+                    '<strong>Replacement market</strong> still generates steady revenue stream',
+                    '<strong>Low-income segments</strong> remain primary traditional bulb customers',
+                    '<strong>Phase-out regulations</strong> accelerating LED transition'
+                ];
+            } else if (currentFilters.category === 'Outdoor Lighting') {
+                insights = [
+                    '<strong>Outdoor Lighting</strong> showing seasonal strength in Q2-Q3',
+                    '<strong>Solar-powered options</strong> gaining 30% market share',
+                    '<strong>Security features</strong> driving premium product sales',
+                    '<strong>Smart outdoor systems</strong> popular in residential segment'
+                ];
+            } else if (currentFilters.category === 'Commercial Systems') {
+                insights = [
+                    '<strong>Commercial Systems</strong> project-based with high margins',
+                    '<strong>Energy management</strong> features crucial for large accounts',
+                    '<strong>Installation partnerships</strong> key to commercial success',
+                    '<strong>Retrofit market</strong> showing strong Q4 budget cycles'
+                ];
+            } else if (currentFilters.region === 'Northeast') {
+                insights = [
+                    '<strong>Northeast region</strong> leads with $580K revenue performance',
+                    '<strong>Urban markets</strong> showing premium product preference',
+                    '<strong>Commercial projects</strong> driving 55% of regional revenue',
+                    '<strong>Winter seasonality</strong> affects outdoor lighting sales',
+                    '<strong>Energy efficiency regulations</strong> boosting LED adoption'
+                ];
+            } else if (currentFilters.region === 'Southeast') {
+                insights = [
+                    '<strong>Southeast region</strong> strong performance at $475K revenue',
+                    '<strong>Outdoor lighting</strong> year-round demand in warm climate',
+                    '<strong>Residential growth</strong> outpacing commercial in this region',
+                    '<strong>Hurricane-resistant products</strong> have growing demand',
+                    '<strong>Pool/patio lighting</strong> segment showing 35% growth'
+                ];
+            } else if (currentFilters.region === 'West') {
+                insights = [
+                    '<strong>West region</strong> generating $425K with tech-forward customers',
+                    '<strong>Smart lighting adoption</strong> leads all regions at 60%',
+                    '<strong>Sustainability focus</strong> drives premium LED sales',
+                    '<strong>Tech integration</strong> key differentiator in West market',
+                    '<strong>Commercial solar</strong> lighting systems gaining traction'
+                ];
+            } else if (currentFilters.region === 'Midwest') {
+                insights = [
+                    '<strong>Midwest region</strong> solid $385K revenue with value focus',
+                    '<strong>Agricultural lighting</strong> emerging growth opportunity',
+                    '<strong>Industrial applications</strong> drive commercial sales',
+                    '<strong>Cost-effectiveness</strong> more important than features',
+                    '<strong>Warehouse lighting</strong> projects boost Q4 performance'
+                ];
+            } else {
+                insights = [
+                    '<strong>LED Fixtures</strong> dominate with 40% market share and highest margins (35%)',
+                    '<strong>Northeast region</strong> outperforms others by 22% - expansion opportunity identified',
+                    '<strong>Q4 seasonality</strong> shows 25% sales boost - inventory planning optimized',
+                    '<strong>B2B customers</strong> have 3x higher AOV than B2C - focus area for growth',
+                    '<strong>Smart Lighting</strong> category shows 45% growth potential - strategic investment',
+                    '<strong>Traditional Bulbs</strong> declining but still profitable replacement market'
+                ];
+            }
+
+            insightsList.innerHTML = insights.map(insight => `<li>${insight}</li>`).join('');
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('periodFilter').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            
+            currentFilters = { period: '', region: '', category: '' };
+            updateDashboard();
+        }
+
+        // Initialize dashboard
+        window.addEventListener('load', function() {
+            initializeCharts();
+            updateDashboard();
         });
 
         // Auto-resize charts on window resize
         window.addEventListener('resize', function() {
-            Chart.instances.forEach(chart => {
+            Object.values(charts).forEach(chart => {
                 chart.resize();
             });
         });
